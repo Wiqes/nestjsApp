@@ -1,4 +1,4 @@
 export class UpdateProductDto {
-  readonly title: string
-  readonly price: number
+    readonly title: string;
+    readonly price: number;
 }

@@ -5,11 +5,13 @@ import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
 
 @Module({
-  imports: [
-    ProductsModule,
-    MongooseModule.forRoot(`mongodb+srv://wiqes:qwerty312@cluster0.lejcg.mongodb.net/products?retryWrites=true&w=majority`)
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        ProductsModule,
+        MongooseModule.forRoot(
+            `mongodb+srv://wiqes:qwerty312@cluster0.lejcg.mongodb.net/products?retryWrites=true&w=majority`,
+        ),
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}
