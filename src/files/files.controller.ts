@@ -18,7 +18,7 @@ export class FilesController {
     async uploadedFile(@UploadedFile() file) {
         const response = {
             originalName: file.originalname,
-            filename: file.filename,
+            fileName: file.filename,
         };
 
         return response;
@@ -38,8 +38,8 @@ export class FilesController {
         const response = [];
         files.forEach((file) => {
             const fileReponse = {
-                originalname: file.originalname,
-                filename: file.filename,
+                originalName: file.originalname,
+                fileName: file.filename,
             };
             response.push(fileReponse);
         });
