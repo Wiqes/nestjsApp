@@ -5,7 +5,7 @@ import { editFileName, imageFileFilter } from './utils/file-upload.utils';
 
 @Controller()
 export class AppController {
-    /* @Post()
+    @Post()
     @UseInterceptors(
         FileInterceptor('image', {
             storage: diskStorage({
@@ -14,15 +14,14 @@ export class AppController {
             }),
             fileFilter: imageFileFilter,
         }),
-    )*/
-    @Post()
-    @UseInterceptors(AnyFilesInterceptor())
+    )
     async uploadedFile(@UploadedFile() file) {
-        /* const response = {
-            originalname: file.originalname,
+        const response = {
+            originalName: file.originalname,
             filename: file.filename,
-        };*/
-        return file;
+        };
+
+        return response;
     }
 
     @Post('multiple')
