@@ -10,7 +10,7 @@ export class PostersService {
     constructor(@InjectModel(Poster.name) private posterModel: Model<PosterDocument>) {}
 
     async getAll(): Promise<Poster[]> {
-        return this.posterModel.find().exec();
+        return this.posterModel.find().sort({ _id: 'desc' }).exec();
     }
 
     async getById(id: string): Promise<Poster> {
