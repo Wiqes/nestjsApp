@@ -9,6 +9,7 @@ import { PostersModule } from './posters/posters.module';
     imports: [
         MongooseModule.forRoot(
             `mongodb+srv://wiqes:qwerty312@cluster0.lejcg.mongodb.net/olrx?retryWrites=true&w=majority`,
+            { useFindAndModify: false },
         ),
         FilesModule,
         PostersModule,
