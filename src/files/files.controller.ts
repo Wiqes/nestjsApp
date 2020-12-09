@@ -1,5 +1,16 @@
-import { Controller, Get, Param, Post, Res, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import {
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    Res,
+    UploadedFile,
+    UploadedFiles,
+    UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { unlinkSync } from 'fs';
 import { diskStorage } from 'multer';
 import { editFileName, imageFileFilter } from './file-upload.utils';
 
@@ -16,12 +27,10 @@ export class FilesController {
         }),
     )
     async uploadedFile(@UploadedFile() file) {
-        const response = {
+        return {
             originalName: file.originalname,
             fileName: file.filename,
         };
-
-        return response;
     }
 
     @Post('multiple')
@@ -46,8 +55,20 @@ export class FilesController {
         return response;
     }
 
-    @Get(':imgpath')
-    seeUploadedFile(@Param('imgpath') image, @Res() res) {
+    @Get(':imgPath')
+    seeUploadedFile(@Param('imgPath') image, @Res() res) {
         return res.sendFile(image, { root: './files' });
+    }
+
+    @Delete(':img')
+    remove(@Param('img') image: string): void {
+        const path = `./files/${image}`;
+
+        try {
+            unlinkSync(path);
+            //file removed
+        } catch (err) {
+            console.error(err);
+        }
     }
 }
