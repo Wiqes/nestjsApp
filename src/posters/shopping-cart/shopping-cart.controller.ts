@@ -1,15 +1,21 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { Poster } from 'src/schemas/poster.schema';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ShoppingCart } from './schemas/shopping-cart.schema';
+import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
 
 @Controller('shopping-cart')
 export class ShoppingCartController {
     constructor(private readonly shoppingCartService: ShoppingCartService) {}
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Get()
-    getAll(): Promise<Poster[]> {
+    getAll(): Promise<ShoppingCart[]> {
         return this.shoppingCartService.getAll();
+    }
+
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    create(@Body() createShoppingCartDto: CreateShoppingCartDto): Promise<any> {
+        return this.shoppingCartService.create(createShoppingCartDto);
     }
 }
