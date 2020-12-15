@@ -25,7 +25,7 @@ export class ShoppingCartController {
         @Body() updateShoppingCartDto: UpdateShoppingCartDto,
         @Param('userId') userId: string,
     ): Promise<ShoppingCart> {
-        return this.shoppingCartService.addPoster(userId, updateShoppingCartDto);
+        return this.shoppingCartService.shiftPoster(userId, updateShoppingCartDto);
     }
 
     @Get(':userId')
