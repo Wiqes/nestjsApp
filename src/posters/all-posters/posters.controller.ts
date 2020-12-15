@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
-import { Poster } from 'src/schemas/poster.schema';
+import { Poster } from 'src/posters/all-posters/schemas/poster.schema';
 import { CreatePosterDto } from './dto/create-poster.dto';
 import { UpdatePosterDto } from './dto/update-poster.dto';
 import { PostersService } from './posters.service';

@@ -1,15 +1,35 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { Poster } from 'src/schemas/poster.schema';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ShoppingCart } from './schemas/shopping-cart.schema';
+import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
+import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
 
 @Controller('shopping-cart')
 export class ShoppingCartController {
     constructor(private readonly shoppingCartService: ShoppingCartService) {}
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Get()
-    getAll(): Promise<Poster[]> {
+    getAll(): Promise<ShoppingCart[]> {
         return this.shoppingCartService.getAll();
+    }
+
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    create(@Body() createShoppingCartDto: CreateShoppingCartDto): Promise<ShoppingCart> {
+        return this.shoppingCartService.create(createShoppingCartDto);
+    }
+
+    @Put(':userId')
+    addPoster(
+        @Body() updateShoppingCartDto: UpdateShoppingCartDto,
+        @Param('userId') userId: string,
+    ): Promise<ShoppingCart> {
+        return this.shoppingCartService.addPoster(userId, updateShoppingCartDto);
+    }
+
+    @Get(':userId')
+    getUserShoppingCart(@Param('userId') userId: string): Promise<any> {
+        return this.shoppingCartService.getUserShoppingCart(userId);
     }
 }
