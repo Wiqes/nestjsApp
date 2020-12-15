@@ -22,16 +22,17 @@ export class ShoppingCartService {
         return newShoppingCart.save();
     }
 
-    async addPoster(action: string, shoppingCartDto: UpdateShoppingCartDto): Promise<ShoppingCart> {
-        return this.shoppingCartModel.findOne({ username: shoppingCartDto.username }, function (err, foundCompany) {
-            if (err) {
-                console.log(err);
-            }
-            if (action === 'add') {
-                foundCompany.posters.push(shoppingCartDto.posterId);
-            }
-            foundCompany.save();
-        });
+    async shiftPoster(action: string, shoppingCartDto: UpdateShoppingCartDto): Promise<ShoppingCart> {
+        const foundCompany = await this.shoppingCartModel.findOne({ username: shoppingCartDto.username });
+
+        if (action === 'add') {
+            foundCompany.posters.push(shoppingCartDto.posterId);
+        } else if (action === 'remove') {
+            foundCompany.posters = foundCompany.posters.filter((posterId) => {
+                return String(posterId) !== shoppingCartDto.posterId;
+            });
+        }
+        return foundCompany.save();
     }
 
     async getUserShoppingCart(userId: string): Promise<any> {
