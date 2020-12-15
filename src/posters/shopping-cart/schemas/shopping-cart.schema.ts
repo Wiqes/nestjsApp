@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-//import { Poster } from 'src/posters/all-posters/schemas/poster.schema';
 
 export type ShoppingCartDocument = ShoppingCart & mongoose.Document;
 
