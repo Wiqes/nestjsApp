@@ -22,29 +22,22 @@ export class ShoppingCartService {
         return newShoppingCart.save();
     }
 
-    async addPoster(userId: string, shoppingCartDto: UpdateShoppingCartDto): Promise<ShoppingCart> {
-        return this.shoppingCartModel.findOne({ username: userId }, function (err, foundCompany) {
+    async addPoster(action: string, shoppingCartDto: UpdateShoppingCartDto): Promise<ShoppingCart> {
+        return this.shoppingCartModel.findOne({ username: shoppingCartDto.username }, function (err, foundCompany) {
             if (err) {
                 console.log(err);
             }
-
-            foundCompany.posters.push(shoppingCartDto.posterId);
+            if (action === 'add') {
+                foundCompany.posters.push(shoppingCartDto.posterId);
+            }
             foundCompany.save();
         });
     }
 
     async getUserShoppingCart(userId: string): Promise<any> {
-        let shoppingCartPosters = [];
-        await this.shoppingCartModel.findOne({ username: userId }, function (err, foundUser) {
-            if (err) {
-                console.log(err);
-            }
-
-            shoppingCartPosters = foundUser.posters;
-        });
-        //return shoppingCartPosters;
+        const shoppingCart = await this.shoppingCartModel.findOne({ username: userId });
         return this.posterModel
-            .find({ _id: { $in: shoppingCartPosters } })
+            .find({ _id: { $in: shoppingCart.posters } })
             .sort({ _id: 'desc' })
             .exec();
     }
