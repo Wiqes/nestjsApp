@@ -47,6 +47,14 @@ export class PostersService {
     }
 
     async update(id: string, posterDto: UpdatePosterDto): Promise<Poster> {
-        return this.posterModel.findByIdAndUpdate(id, posterDto, { new: true });
+        try {
+            const updatedPoster = await this.posterModel.findByIdAndUpdate(id, posterDto, { new: true });
+            if (!updatedPoster) {
+                throw 'NotFound';
+            }
+            return updatedPoster;
+        } catch (e) {
+            throw PostersService.notFoundException(id);
+        }
     }
 }
