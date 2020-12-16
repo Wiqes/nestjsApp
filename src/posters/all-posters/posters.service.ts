@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Poster, PosterDocument } from 'src/posters/all-posters/schemas/poster.schema';
@@ -9,12 +9,24 @@ import { UpdatePosterDto } from './dto/update-poster.dto';
 export class PostersService {
     constructor(@InjectModel(Poster.name) private posterModel: Model<PosterDocument>) {}
 
+    private static notFoundException(id: string): NotFoundException {
+        return new NotFoundException(`The poster with id: '${id}' has not been found!`);
+    }
+
     async getAll(): Promise<Poster[]> {
         return this.posterModel.find().sort({ _id: 'desc' }).exec();
     }
 
     async getById(id: string): Promise<Poster> {
-        return this.posterModel.findById(id);
+        try {
+            const found = await this.posterModel.findById(id);
+            if (!found) {
+                throw 'NotFound';
+            }
+            return found;
+        } catch (e) {
+            throw PostersService.notFoundException(id);
+        }
     }
 
     async create(posterDto: CreatePosterDto): Promise<Poster> {
@@ -23,7 +35,15 @@ export class PostersService {
     }
 
     async remove(id: string): Promise<Poster> {
-        return this.posterModel.findByIdAndRemove(id);
+        try {
+            const found = await this.posterModel.findByIdAndRemove(id);
+            if (!found) {
+                throw 'NotFound';
+            }
+            return found;
+        } catch (e) {
+            throw PostersService.notFoundException(id);
+        }
     }
 
     async update(id: string, posterDto: UpdatePosterDto): Promise<Poster> {
