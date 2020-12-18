@@ -6,6 +6,7 @@ import { FilesModule } from './files/files.module';
 import { PostersModule } from './posters/all-posters/posters.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ShoppingCartModule } from './posters/shopping-cart/shopping-cart.module';
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { UsersModule } from './users/users.module';
         ),
         FilesModule,
         PostersModule,
+        ShoppingCartModule,
         AuthModule,
         UsersModule,
     ],
