@@ -24,6 +24,7 @@ export class ShoppingCartService {
 
     async shiftPoster(action: string, shoppingCartDto: UpdateShoppingCartDto): Promise<ShoppingCart> {
         const foundCompany = await this.shoppingCartModel.findOne({ username: shoppingCartDto.username });
+        console.log('zdsfdf', foundCompany);
 
         if (action === 'add') {
             foundCompany.posters.push(shoppingCartDto.posterId);
