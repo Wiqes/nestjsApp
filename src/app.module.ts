@@ -12,7 +12,7 @@ import { ShoppingCartModule } from './posters/shopping-cart/shopping-cart.module
     imports: [
         MongooseModule.forRoot(
             `mongodb+srv://wiqes:qwerty312@cluster0.lejcg.mongodb.net/olrx?retryWrites=true&w=majority`,
-            { useFindAndModify: false },
+            { useFindAndModify: false, useCreateIndex: true },
         ),
         FilesModule,
         PostersModule,
