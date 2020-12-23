@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { Optional } from '@nestjs/common';
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -11,6 +12,9 @@ export class CreateUserDto {
     @IsString()
     @MinLength(8)
     @MaxLength(20)
-    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/, { message: 'password too weak' })
+    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/, { message: 'Password is too weak' })
     readonly password: string;
+
+    @Optional()
+    readonly salt: string;
 }
