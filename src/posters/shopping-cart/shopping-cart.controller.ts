@@ -3,12 +3,13 @@ import { ShoppingCartService } from './shopping-cart.service';
 import { ShoppingCart } from './schemas/shopping-cart.schema';
 import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
+//import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('shopping-cart')
+//@UseGuards(JwtAuthGuard)
 export class ShoppingCartController {
     constructor(private readonly shoppingCartService: ShoppingCartService) {}
 
-    // @UseGuards(JwtAuthGuard)
     @Get()
     getAll(): Promise<ShoppingCart[]> {
         return this.shoppingCartService.getAll();
