@@ -1,8 +1,10 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
 import { ShoppingCart } from './schemas/shopping-cart.schema';
 import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { GetUser } from '../../custom-decorators/get-user.decorator';
 //import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('shopping-cart')
@@ -10,7 +12,7 @@ import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
 export class ShoppingCartController {
     constructor(private readonly shoppingCartService: ShoppingCartService) {}
 
-    @Get()
+    @Get('get-all')
     getAll(): Promise<ShoppingCart[]> {
         return this.shoppingCartService.getAll();
     }
@@ -21,16 +23,19 @@ export class ShoppingCartController {
         return this.shoppingCartService.create(createShoppingCartDto);
     }
 
-    @Put(':userId')
-    addPoster(
+    @UseGuards(JwtAuthGuard)
+    @Put(':action')
+    shiftPoster(
         @Body() updateShoppingCartDto: UpdateShoppingCartDto,
-        @Param('userId') userId: string,
+        @Param('action') action: string,
+        @GetUser() { username },
     ): Promise<ShoppingCart> {
-        return this.shoppingCartService.shiftPoster(userId, updateShoppingCartDto);
+        return this.shoppingCartService.shiftPoster(action, { ...updateShoppingCartDto, username });
     }
 
-    @Get(':userId')
-    getUserShoppingCart(@Param('userId') userId: string): Promise<any> {
-        return this.shoppingCartService.getUserShoppingCart(userId);
+    @UseGuards(JwtAuthGuard)
+    @Get()
+    getUserShoppingCart(@GetUser() { username }): Promise<any> {
+        return this.shoppingCartService.getUserShoppingCart(username);
     }
 }
