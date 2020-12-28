@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ShoppingCartService } from './shopping-cart.service';
 import { ShoppingCart } from './schemas/shopping-cart.schema';
 import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 //import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('shopping-cart')
@@ -21,12 +22,13 @@ export class ShoppingCartController {
         return this.shoppingCartService.create(createShoppingCartDto);
     }
 
-    @Put(':userId')
+    @UseGuards(JwtAuthGuard)
+    @Put(':action')
     addPoster(
         @Body() updateShoppingCartDto: UpdateShoppingCartDto,
-        @Param('userId') userId: string,
+        @Param('action') action: string,
     ): Promise<ShoppingCart> {
-        return this.shoppingCartService.shiftPoster(userId, updateShoppingCartDto);
+        return this.shoppingCartService.shiftPoster(action, updateShoppingCartDto);
     }
 
     @Get(':userId')
