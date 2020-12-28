@@ -1,4 +1,4 @@
 export class UpdateShoppingCartDto {
-    username: string;
+    username?: string;
     posterId: string;
 }
