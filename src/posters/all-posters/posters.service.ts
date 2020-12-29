@@ -4,10 +4,14 @@ import { Model } from 'mongoose';
 import { Poster, PosterDocument } from 'src/posters/all-posters/schemas/poster.schema';
 import { CreatePosterDto } from './dto/create-poster.dto';
 import { UpdatePosterDto } from './dto/update-poster.dto';
+import { ShoppingCart, ShoppingCartDocument } from '../shopping-cart/schemas/shopping-cart.schema';
 
 @Injectable()
 export class PostersService {
-    constructor(@InjectModel(Poster.name) private posterModel: Model<PosterDocument>) {}
+    constructor(
+        @InjectModel(Poster.name) private posterModel: Model<PosterDocument>,
+        @InjectModel(ShoppingCart.name) private shoppingCartModel: Model<ShoppingCartDocument>,
+    ) {}
 
     private static notFoundException(id: string): NotFoundException {
         return new NotFoundException(`The poster with id: '${id}' has not been found!`);
@@ -34,15 +38,22 @@ export class PostersService {
         return newPoster.save();
     }
 
-    async remove(id: string): Promise<Poster> {
+    async remove(posterId: string, username: string): Promise<Poster> {
         try {
-            const found = await this.posterModel.findByIdAndRemove(id);
-            if (!found) {
+            const foundPoster = await this.posterModel.findByIdAndRemove(posterId);
+            if (!foundPoster) {
                 throw 'NotFound';
             }
-            return found;
+
+            const foundShoppingCart = await this.shoppingCartModel.findOne({ username });
+            foundShoppingCart.posters = foundShoppingCart.posters.filter((posterId) => {
+                return String(posterId) !== posterId;
+            });
+            foundShoppingCart.save();
+
+            return foundPoster;
         } catch (e) {
-            throw PostersService.notFoundException(id);
+            throw PostersService.notFoundException(posterId);
         }
     }
 
@@ -55,6 +66,20 @@ export class PostersService {
             return updatedPoster;
         } catch (e) {
             throw PostersService.notFoundException(id);
+        }
+    }
+    async getPostersById(idArray: Array<string>): Promise<Poster[]> {
+        try {
+            const foundPosters = await this.posterModel
+                .find({ _id: { $in: idArray } })
+                .sort({ _id: 'desc' })
+                .exec();
+            if (!foundPosters) {
+                throw 'NotFound';
+            }
+            return foundPosters;
+        } catch (e) {
+            throw PostersService.notFoundException(JSON.stringify(idArray));
         }
     }
 }
