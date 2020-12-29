@@ -45,9 +45,9 @@ export class PostersService {
                 throw 'NotFound';
             }
 
-            const foundShoppingCart = await this.shoppingCartModel.findOne({ username });
-            foundShoppingCart.posters = foundShoppingCart.posters.filter((posterId) => {
-                return String(posterId) !== posterId;
+            const foundShoppingCart = await this.shoppingCartModel.findOne({ username: foundPoster.buyer });
+            foundShoppingCart.posters = foundShoppingCart.posters.filter((currentPosterId) => {
+                return String(currentPosterId) !== posterId;
             });
             foundShoppingCart.save();
 
