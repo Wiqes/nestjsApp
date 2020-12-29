@@ -2,9 +2,9 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuard
 import { ShoppingCartService } from './shopping-cart.service';
 import { ShoppingCart } from './schemas/shopping-cart.schema';
 import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
-import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { GetUser } from '../../custom-decorators/get-user.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { GetUser } from 'src/custom-decorators/get-user.decorator';
+
 //import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('shopping-cart')
@@ -24,13 +24,15 @@ export class ShoppingCartController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put(':action')
-    shiftPoster(
-        @Body() updateShoppingCartDto: UpdateShoppingCartDto,
-        @Param('action') action: string,
-        @GetUser() { username },
-    ): Promise<ShoppingCart> {
-        return this.shoppingCartService.shiftPoster(action, { ...updateShoppingCartDto, username });
+    @Put('add/:posterId')
+    addPoster(@Param('posterId') posterId: string, @GetUser() { username }): Promise<ShoppingCart> {
+        return this.shoppingCartService.addPoster(posterId, username);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('remove/:posterId')
+    removePoster(@Param('posterId') posterId: string, @GetUser() { username }): Promise<ShoppingCart> {
+        return this.shoppingCartService.removePoster(posterId, username);
     }
 
     @UseGuards(JwtAuthGuard)

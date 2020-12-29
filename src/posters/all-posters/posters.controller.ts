@@ -23,8 +23,8 @@ export class PostersController {
     @UseGuards(JwtAuthGuard)
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    create(@Body() createPosterDto: CreatePosterDto): Promise<Poster> {
-        return this.postersService.create(createPosterDto);
+    create(@Body() createPosterDto: CreatePosterDto, @GetUser() { username }): Promise<Poster> {
+        return this.postersService.create(createPosterDto, username);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -37,5 +37,10 @@ export class PostersController {
     @Put(':id')
     update(@Body() updatePosterDto: UpdatePosterDto, @Param('id') id: string): Promise<Poster> {
         return this.postersService.update(id, updatePosterDto);
+    }
+
+    @Put()
+    updateAll(): Promise<Poster[]> {
+        return this.postersService.updateAll();
     }
 }

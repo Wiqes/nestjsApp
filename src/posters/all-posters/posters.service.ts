@@ -33,8 +33,8 @@ export class PostersService {
         }
     }
 
-    async create(posterDto: CreatePosterDto): Promise<Poster> {
-        const newPoster = new this.posterModel(posterDto);
+    async create(posterDto: CreatePosterDto, username: string): Promise<Poster> {
+        const newPoster = new this.posterModel({ ...posterDto, creator: username });
         return newPoster.save();
     }
 
@@ -45,9 +45,9 @@ export class PostersService {
                 throw 'NotFound';
             }
 
-            const foundShoppingCart = await this.shoppingCartModel.findOne({ username });
-            foundShoppingCart.posters = foundShoppingCart.posters.filter((posterId) => {
-                return String(posterId) !== posterId;
+            const foundShoppingCart = await this.shoppingCartModel.findOne({ username: foundPoster.buyer });
+            foundShoppingCart.posters = foundShoppingCart.posters.filter((currentPosterId) => {
+                return String(currentPosterId) !== posterId;
             });
             foundShoppingCart.save();
 
@@ -68,6 +68,46 @@ export class PostersService {
             throw PostersService.notFoundException(id);
         }
     }
+
+    async updateBuyerValue(posterId: string, buyer: string): Promise<Poster> {
+        try {
+            const foundPoster = await this.posterModel.findById(posterId);
+            if (!foundPoster) {
+                throw 'NotFound';
+            }
+            foundPoster.buyer = buyer;
+            return foundPoster.save();
+        } catch (e) {
+            throw PostersService.notFoundException(posterId);
+        }
+    }
+
+    async removeShoppingCartFlag(posterId: string): Promise<Poster> {
+        try {
+            const foundPoster = await this.posterModel.findById(posterId);
+            if (!foundPoster) {
+                throw 'NotFound';
+            }
+            foundPoster.isInShoppingCart = false;
+            return foundPoster.save();
+        } catch (e) {
+            throw PostersService.notFoundException(posterId);
+        }
+    }
+
+    async addShoppingCartFlag(posterId: string): Promise<Poster> {
+        try {
+            const foundPoster = await this.posterModel.findById(posterId);
+            if (!foundPoster) {
+                throw 'NotFound';
+            }
+            foundPoster.isInShoppingCart = true;
+            return foundPoster.save();
+        } catch (e) {
+            throw PostersService.notFoundException(posterId);
+        }
+    }
+
     async getPostersById(idArray: Array<string>): Promise<Poster[]> {
         try {
             const foundPosters = await this.posterModel
@@ -80,6 +120,27 @@ export class PostersService {
             return foundPosters;
         } catch (e) {
             throw PostersService.notFoundException(JSON.stringify(idArray));
+        }
+    }
+
+    async updateAll(): Promise<Poster[]> {
+        try {
+            const foundPosters = await this.posterModel.find().exec();
+            if (!foundPosters) {
+                throw 'NotFound';
+            }
+
+            const newPosters: Poster[] = [];
+
+            for (const poster of foundPosters) {
+                const foundPoster = await this.posterModel.findByIdAndUpdate(poster._id, { poster }, { new: true });
+
+                newPosters.push(foundPoster);
+            }
+
+            return newPosters;
+        } catch (e) {
+            throw PostersService.notFoundException(JSON.stringify('any_id'));
         }
     }
 }

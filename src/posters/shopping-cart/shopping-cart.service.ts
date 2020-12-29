@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { ShoppingCart, ShoppingCartDocument } from './schemas/shopping-cart.schema';
-import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
 import { PostersService } from '../all-posters/posters.service';
 
 @Injectable()
@@ -22,16 +21,23 @@ export class ShoppingCartService {
         return newShoppingCart.save();
     }
 
-    async shiftPoster(action: string, shoppingCartDto: UpdateShoppingCartDto): Promise<ShoppingCart> {
-        const foundShoppingCart = await this.shoppingCartModel.findOne({ username: shoppingCartDto.username });
+    async addPoster(posterId: string, username: string): Promise<ShoppingCart> {
+        const foundShoppingCart = await this.shoppingCartModel.findOne({ username });
+        foundShoppingCart.posters.push(posterId);
+        await this.postersService.updateBuyerValue(posterId, username);
+        await this.postersService.addShoppingCartFlag(posterId);
 
-        if (action === 'add') {
-            foundShoppingCart.posters.push(shoppingCartDto.posterId);
-        } else if (action === 'remove') {
-            foundShoppingCart.posters = foundShoppingCart.posters.filter((posterId) => {
-                return String(posterId) !== shoppingCartDto.posterId;
-            });
-        }
+        return foundShoppingCart.save();
+    }
+
+    async removePoster(posterId: string, username: string): Promise<ShoppingCart> {
+        const foundShoppingCart = await this.shoppingCartModel.findOne({ username });
+        foundShoppingCart.posters = foundShoppingCart.posters.filter((currentPosterId) => {
+            return String(currentPosterId) !== posterId;
+        });
+        await this.postersService.updateBuyerValue(posterId, '');
+        await this.postersService.removeShoppingCartFlag(posterId);
+
         return foundShoppingCart.save();
     }
 
