@@ -22,6 +22,12 @@ export class Poster {
 
     @Prop()
     photo: string;
+
+    @Prop()
+    creator: string;
+
+    @Prop()
+    buyer: string;
 }
 
 export const PosterSchema = SchemaFactory.createForClass(Poster);

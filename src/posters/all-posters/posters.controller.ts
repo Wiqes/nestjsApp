@@ -23,8 +23,8 @@ export class PostersController {
     @UseGuards(JwtAuthGuard)
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    create(@Body() createPosterDto: CreatePosterDto): Promise<Poster> {
-        return this.postersService.create(createPosterDto);
+    create(@Body() createPosterDto: CreatePosterDto, @GetUser() { username }): Promise<Poster> {
+        return this.postersService.create(createPosterDto, username);
     }
 
     @UseGuards(JwtAuthGuard)

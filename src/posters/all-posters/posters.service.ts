@@ -33,8 +33,8 @@ export class PostersService {
         }
     }
 
-    async create(posterDto: CreatePosterDto): Promise<Poster> {
-        const newPoster = new this.posterModel(posterDto);
+    async create(posterDto: CreatePosterDto, username: string): Promise<Poster> {
+        const newPoster = new this.posterModel({ ...posterDto, creator: username });
         return newPoster.save();
     }
 
@@ -92,11 +92,7 @@ export class PostersService {
             const newPosters: Poster[] = [];
 
             for (const poster of foundPosters) {
-                const foundPoster = await this.posterModel.findByIdAndUpdate(
-                    poster._id,
-                    { poster, isInShoppingCart: false },
-                    { new: true },
-                );
+                const foundPoster = await this.posterModel.findByIdAndUpdate(poster._id, { poster }, { new: true });
 
                 newPosters.push(foundPoster);
             }
