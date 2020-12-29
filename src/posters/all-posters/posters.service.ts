@@ -82,6 +82,32 @@ export class PostersService {
         }
     }
 
+    async removeShoppingCartFlag(posterId: string): Promise<Poster> {
+        try {
+            const foundPoster = await this.posterModel.findById(posterId);
+            if (!foundPoster) {
+                throw 'NotFound';
+            }
+            foundPoster.isInShoppingCart = false;
+            return foundPoster.save();
+        } catch (e) {
+            throw PostersService.notFoundException(posterId);
+        }
+    }
+
+    async addShoppingCartFlag(posterId: string): Promise<Poster> {
+        try {
+            const foundPoster = await this.posterModel.findById(posterId);
+            if (!foundPoster) {
+                throw 'NotFound';
+            }
+            foundPoster.isInShoppingCart = true;
+            return foundPoster.save();
+        } catch (e) {
+            throw PostersService.notFoundException(posterId);
+        }
+    }
+
     async getPostersById(idArray: Array<string>): Promise<Poster[]> {
         try {
             const foundPosters = await this.posterModel
