@@ -4,6 +4,7 @@ import { CreatePosterDto } from './dto/create-poster.dto';
 import { UpdatePosterDto } from './dto/update-poster.dto';
 import { PostersService } from './posters.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { GetUser } from '../../custom-decorators/get-user.decorator';
 
 @Controller('posters')
 export class PostersController {
@@ -28,8 +29,8 @@ export class PostersController {
 
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    remove(@Param('id') id: string): Promise<Poster> {
-        return this.postersService.remove(id);
+    remove(@Param('id') id: string, @GetUser() { username }): Promise<Poster> {
+        return this.postersService.remove(id, username);
     }
 
     @UseGuards(JwtAuthGuard)

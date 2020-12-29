@@ -3,13 +3,15 @@ import { PostersController } from './posters.controller';
 import { PostersService } from './posters.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Poster, PosterSchema } from './schemas/poster.schema';
-import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
-import { ShoppingCartModule } from '../shopping-cart/shopping-cart.module';
+import { ShoppingCart, ShoppingCartSchema } from '../shopping-cart/schemas/shopping-cart.schema';
 
 @Module({
-    controllers: [PostersController /*ShoppingCartService*/],
+    controllers: [PostersController],
     providers: [PostersService],
-    imports: [MongooseModule.forFeature([{ name: Poster.name, schema: PosterSchema }]) /*ShoppingCartModule*/],
+    imports: [
+        MongooseModule.forFeature([{ name: Poster.name, schema: PosterSchema }]),
+        MongooseModule.forFeature([{ name: ShoppingCart.name, schema: ShoppingCartSchema }]),
+    ],
     exports: [PostersService, MongooseModule.forFeature([{ name: Poster.name, schema: PosterSchema }])],
 })
 export class PostersModule {}
