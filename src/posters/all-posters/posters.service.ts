@@ -60,4 +60,18 @@ export class PostersService {
             throw PostersService.notFoundException(id);
         }
     }
+    async getPostersById(idArray: Array<string>): Promise<Poster[]> {
+        try {
+            const foundPosters = await this.posterModel
+                .find({ _id: { $in: idArray } })
+                .sort({ _id: 'desc' })
+                .exec();
+            if (!foundPosters) {
+                throw 'NotFound';
+            }
+            return foundPosters;
+        } catch (e) {
+            throw PostersService.notFoundException(JSON.stringify(idArray));
+        }
+    }
 }

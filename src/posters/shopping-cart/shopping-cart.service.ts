@@ -4,13 +4,13 @@ import { Model } from 'mongoose';
 import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
 import { ShoppingCart, ShoppingCartDocument } from './schemas/shopping-cart.schema';
 import { UpdateShoppingCartDto } from './dto/update-shopping-cart.dto';
-import { Poster, PosterDocument } from '../all-posters/schemas/poster.schema';
+import { PostersService } from '../all-posters/posters.service';
 
 @Injectable()
 export class ShoppingCartService {
     constructor(
         @InjectModel(ShoppingCart.name) private shoppingCartModel: Model<ShoppingCartDocument>,
-        @InjectModel(Poster.name) private posterModel: Model<PosterDocument>,
+        private postersService: PostersService,
     ) {}
 
     async getAll(): Promise<ShoppingCart[]> {
@@ -37,9 +37,6 @@ export class ShoppingCartService {
 
     async getUserShoppingCart(username: string): Promise<any> {
         const shoppingCart = await this.shoppingCartModel.findOne({ username });
-        return this.posterModel
-            .find({ _id: { $in: shoppingCart.posters } })
-            .sort({ _id: 'desc' })
-            .exec();
+        return this.postersService.getPostersById(shoppingCart.posters);
     }
 }
