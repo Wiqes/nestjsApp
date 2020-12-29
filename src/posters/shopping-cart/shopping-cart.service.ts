@@ -22,15 +22,17 @@ export class ShoppingCartService {
         return newShoppingCart.save();
     }
 
-    async shiftPoster(action: string, shoppingCartDto: UpdateShoppingCartDto): Promise<ShoppingCart> {
-        const foundShoppingCart = await this.shoppingCartModel.findOne({ username: shoppingCartDto.username });
+    async shiftPoster(action: string, { username, posterId }: UpdateShoppingCartDto): Promise<ShoppingCart> {
+        const foundShoppingCart = await this.shoppingCartModel.findOne({ username: username });
 
         if (action === 'add') {
-            foundShoppingCart.posters.push(shoppingCartDto.posterId);
+            foundShoppingCart.posters.push(posterId);
+            await this.postersService.updateBuyerValue(posterId, username);
         } else if (action === 'remove') {
             foundShoppingCart.posters = foundShoppingCart.posters.filter((posterId) => {
-                return String(posterId) !== shoppingCartDto.posterId;
+                return String(posterId) !== posterId;
             });
+            await this.postersService.updateBuyerValue(posterId, '');
         }
         return foundShoppingCart.save();
     }

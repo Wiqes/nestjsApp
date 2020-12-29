@@ -68,6 +68,20 @@ export class PostersService {
             throw PostersService.notFoundException(id);
         }
     }
+
+    async updateBuyerValue(posterId: string, buyer: string): Promise<Poster> {
+        try {
+            const foundPoster = await this.posterModel.findById(posterId);
+            if (!foundPoster) {
+                throw 'NotFound';
+            }
+            foundPoster.buyer = buyer;
+            return foundPoster.save();
+        } catch (e) {
+            throw PostersService.notFoundException(posterId);
+        }
+    }
+
     async getPostersById(idArray: Array<string>): Promise<Poster[]> {
         try {
             const foundPosters = await this.posterModel
@@ -82,6 +96,7 @@ export class PostersService {
             throw PostersService.notFoundException(JSON.stringify(idArray));
         }
     }
+
     async updateAll(): Promise<Poster[]> {
         try {
             const foundPosters = await this.posterModel.find().exec();
