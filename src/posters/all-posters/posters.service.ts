@@ -82,4 +82,28 @@ export class PostersService {
             throw PostersService.notFoundException(JSON.stringify(idArray));
         }
     }
+    async updateAll(): Promise<Poster[]> {
+        try {
+            const foundPosters = await this.posterModel.find().exec();
+            if (!foundPosters) {
+                throw 'NotFound';
+            }
+
+            const newPosters: Poster[] = [];
+
+            for (const poster of foundPosters) {
+                const foundPoster = await this.posterModel.findByIdAndUpdate(
+                    poster._id,
+                    { poster, isInShoppingCart: false },
+                    { new: true },
+                );
+
+                newPosters.push(foundPoster);
+            }
+
+            return newPosters;
+        } catch (e) {
+            throw PostersService.notFoundException(JSON.stringify('any_id'));
+        }
+    }
 }

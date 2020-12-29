@@ -38,4 +38,9 @@ export class PostersController {
     update(@Body() updatePosterDto: UpdatePosterDto, @Param('id') id: string): Promise<Poster> {
         return this.postersService.update(id, updatePosterDto);
     }
+
+    @Put()
+    updateAll(): Promise<Poster[]> {
+        return this.postersService.updateAll();
+    }
 }
