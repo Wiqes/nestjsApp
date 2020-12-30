@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Poster, PosterDocument } from 'src/posters/all-posters/schemas/poster.schema';
@@ -40,20 +40,31 @@ export class PostersService {
 
     async remove(posterId: string, username: string): Promise<Poster> {
         try {
-            const foundPoster = await this.posterModel.findByIdAndRemove(posterId);
+            const foundPoster = await this.posterModel.findById(posterId);
             if (!foundPoster) {
                 throw 'NotFound';
             }
+            if (foundPoster.creator !== username) {
+                throw new HttpException('403', HttpStatus.FORBIDDEN);
+            }
 
-            const foundShoppingCart = await this.shoppingCartModel.findOne({ username: foundPoster.buyer });
-            foundShoppingCart.posters = foundShoppingCart.posters.filter((currentPosterId) => {
-                return String(currentPosterId) !== posterId;
-            });
-            foundShoppingCart.save();
+            const removedPoster = await this.posterModel.findByIdAndRemove(posterId);
 
-            return foundPoster;
+            if (foundPoster.buyer) {
+                const foundShoppingCart = await this.shoppingCartModel.findOne({ username: foundPoster.buyer });
+                foundShoppingCart.posters = foundShoppingCart.posters.filter((currentPosterId) => {
+                    return String(currentPosterId) !== posterId;
+                });
+                foundShoppingCart.save();
+            }
+
+            return removedPoster;
         } catch (e) {
-            throw PostersService.notFoundException(posterId);
+            if (e.message === '403') {
+                throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+            } else {
+                throw PostersService.notFoundException(posterId);
+            }
         }
     }
 
